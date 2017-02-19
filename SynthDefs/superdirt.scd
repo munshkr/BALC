@@ -1,0 +1,90 @@
+(
+// balc
+SynthDef(\kick, {|out=0, attack=0.001, release=0.125, pan=0.5, freq|
+  var sound, env;
+  sound = HPF.ar(SinOsc.ar(freq * XLine.ar(1, 1/4, 1/16, doneAction:2)), 100);
+  env = EnvGen.ar(Env.perc(attack, release, 1, -4), doneAction:2);
+  sound = sound * 2 * env;
+	OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan, env));
+}).add;
+
+SynthDef(\snare, {|out=0, amp = 0.1, freq = 1000, freq2 = 180, attack = 0.01, release = 0.2, pan = 0|
+	var snd1 = WhiteNoise.ar(amp);
+	var snd2 = SinOsc.ar(freq2,0,amp);
+	var env = Env.perc(attack, release).kr(doneAction: 2);
+	var sum = RHPF.ar(snd1 * env, 2500)+LPF.ar(snd2*env,1500);
+	OffsetOut.ar(out, DirtPan.ar(sum*amp, ~dirt.numChannels, pan))
+	}).add;
+
+SynthDef(\snare1, {
+  |out=0, attack=0.01, sustain=0.125, amp=1, pan=0, freq|
+  var sound = HPF.ar(BrownNoise.ar(1), freq) * EnvGen.ar(Env.perc(attack, sustain, 1, -4), doneAction:2);
+  OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan))
+}).add;
+
+SynthDef(\hihat, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, n|
+  var freq, snd, env;
+	n = ((n>0)*n) + ((n<1)*3);
+	freq = (n*10).midicps;
+	env = Env.perc(attack, release).ar(doneAction: 2);
+	snd = RHPF.ar(WhiteNoise.ar(amp) * env, 10000, 0.1) * env * amp;
+	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan))
+    }).add;
+
+SynthDef(\hihat1, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, n|
+  var freq, snd, env;
+	n = ((n>0)*n) + ((n<1)*3);
+	freq = (n*10).midicps;
+	env = Env.perc(attack, release).kr(doneAction: 2);
+	snd = RHPF.ar(BrownNoise.ar(amp) * env, 10000, 0.1) * env * amp;
+	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan))
+    }).add;
+
+SynthDef(\bassy1, {|out=0, freq=440, ctf=1000, rq = 0.5, attack=0.001, release=1, lpcutoff=5000, amp=0.1, mul=1, pan=0.5|
+	var sig = Saw.ar(freq);
+	var env = EnvGen.ar(Env.perc(attack, release), doneAction:2);
+	sig = mul * BHiPass.ar(RLPF.ar(sig, lpcutoff*env, rq), ctf, rq);
+	OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan, env))
+}).add;
+
+SynthDef(\bassy, {|out=0, lctf=1200, hctf=200, rq = 0.5, attack=0.001, release=1, pan=0.5, freq|
+  var saw, env;
+	env = EnvGen.ar(Env.perc(attack, release), doneAction:2);
+	saw = BHiPass.ar(RLPF.ar(Saw.ar(freq,0.5), lctf*env, rq), hctf, 1);
+  saw = saw * env;
+	OffsetOut.ar(out, DirtPan.ar(saw, ~dirt.numChannels, pan, env))
+}).add;
+
+SynthDef(\sin, {|out, attack=0.001, release=1, sustain=1, pan, accelerate, freq, detune=0.1|
+	var env = EnvGen.ar(Env.perc(attack, release, 1, -4), timeScale: sustain / 2, doneAction: 2);
+	var sound = SinOsc.ar([freq, freq+detune] * Line.kr(1,1+accelerate, sustain));
+	OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan, env));
+}).add;
+
+SynthDef(\fm, {|out, attack=0.001, sustain=1, pan, accelerate, freq, carPartial=1, modPartial=1, index=3, mul=0.1, detune=0.1|
+  var env = EnvGen.ar(Env.perc(attack, 0.999, 1, -3), timeScale: sustain / 2, doneAction:2);
+  var mod = SinOsc.ar(freq * modPartial * Line.kr(1,1+accelerate, sustain), 0, freq * index * LFNoise1.kr(5.reciprocal).abs);
+  var car = SinOsc.ar(([freq, freq+detune] * carPartial) + mod,	0, mul);
+  OffsetOut.ar(out, DirtPan.ar(car, ~dirt.numChannels, pan, env));
+}).add;
+
+SynthDef(\saw, {|out, attack=0.001, sustain=1, pan, accelerate, freq, detune=0.1|
+	var env = EnvGen.ar(Env.perc(attack, 0.999, 1, -4), timeScale: sustain / 2, doneAction:2);
+	var sound = Saw.ar([freq, freq+detune] * Line.kr(1,1+accelerate, sustain));
+	OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan, env));
+}).add;
+
+// foxdot
+SynthDef.new(\varsaw,
+  {|vib=0, out=0, slide=0, rate=1, sustain=1, slidefrom=1, fmod=0, amp=1, bits=0, pan=0.5, freq|
+    var osc, env;
+    freq = freq + fmod;
+    freq = Line.ar(freq * slidefrom, freq * (1 + slide), sustain);
+    freq = Vibrato.kr(freq, rate: vib);
+    osc=VarSaw.ar([freq, (freq * 1.005)], mul: (amp), width: rate);
+    env=EnvGen.ar(Env(levels: [0, amp, 0],curve: 'lin',times: (sustain / 2)), doneAction: 2);
+    osc=(osc * env);
+    OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
+
+  }).add;
+)

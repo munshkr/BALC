@@ -1,0 +1,8 @@
+(
+\name: "BALC",
+\summary: "A class to start either superdirt or foxdot.",
+\author: "Mauro",
+\version: 0.1,
+\organization: "buenos aires live code",
+\dependencies: ["FoxDot", "SuperDirt"]
+)
