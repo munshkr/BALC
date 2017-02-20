@@ -48,7 +48,7 @@ It contains a list of _custom_ SynthDefs in addition to the stock SynthDefs prov
 
 ## Why BALC?
 
-In Argentina, during late 80's, early 90's there was a _scene_ of hardcore and punk bands called **Buenos Aires Hardcore** [0] [1]. So, basically, this is a play on words: **Buenos Aires Livecode**.
+In Argentina, during late 80's, early 90's there was a _scene_ of hardcore and punk bands called **Buenos Aires Hardcore** [0] [1]. So, basically, this is a play on words: **Buenos Aires Livecode** (read: a joke. i don't know, it started with a file called `balc.scd`, so that.)
 
 [0] https://en.wikipedia.org/wiki/Buenos_Aires_Hardcore  
 [1] https://www.youtube.com/watch?v=rtZjKpKjznM
