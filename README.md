@@ -20,7 +20,7 @@ BALC.loadSynthDefs("superdirt");
 BALC.loadSynthDefs("foxdot");
 ```
 
-## SyntDefs
+## SynthDefs
 
 It contains a list of _custom_ SynthDefs in addition to the stock SynthDefs provided by both languages.
 
