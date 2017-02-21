@@ -45,10 +45,10 @@ SynthDef(\bassy1, {|out=0, freq=440, ctf=1000, rq = 0.5, attack=0.001, release=1
 	OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan, env))
 }).add;
 
-SynthDef(\bassy, {|out=0, lctf=1200, hctf=200, rq = 0.5, attack=0.001, release=1, pan=0.5, freq|
+SynthDef(\bassy, {|out=0, lctf=1200, hctf=200, rq = 0.5, attack=0.001, release=1, sustain=1, pan=0.5, detune=0.01, accelerate, freq|
   var saw, env;
 	env = EnvGen.ar(Env.perc(attack, release), doneAction:2);
-	saw = BHiPass.ar(RLPF.ar(Saw.ar(freq,0.5), lctf*env, rq), hctf, 1);
+  saw = BHiPass.ar(RLPF.ar(Saw.ar([freq, freq+detune] * Line.kr(1,1+accelerate, sustain),1), lctf*env, rq), hctf, 1);
   saw = saw * env;
 	OffsetOut.ar(out, DirtPan.ar(saw, ~dirt.numChannels, pan, env))
 }).add;
@@ -59,7 +59,7 @@ SynthDef(\sin, {|out, attack=0.001, release=1, sustain=1, pan, accelerate, freq,
 	OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan, env));
 }).add;
 
-SynthDef(\fm, {|out, attack=0.001, sustain=1, pan, accelerate, freq, carPartial=1, modPartial=1, index=3, mul=0.1, detune=0.1|
+SynthDef(\fm, {|out, attack=0.001, sustain=1, pan, accelerate, freq, carPartial=1, modPartial=1, index=3, mul=0.25, detune=0.1|
   var env = EnvGen.ar(Env.perc(attack, 0.999, 1, -3), timeScale: sustain / 2, doneAction:2);
   var mod = SinOsc.ar(freq * modPartial * Line.kr(1,1+accelerate, sustain), 0, freq * index * LFNoise1.kr(5.reciprocal).abs);
   var car = SinOsc.ar(([freq, freq+detune] * carPartial) + mod,	0, mul);
