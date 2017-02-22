@@ -1,10 +1,6 @@
 BALC {
      classvar s;
 
-     *new{ |name|
-           ^super.new.init(name);
-           }
-
      *init{ |name|
            s = Server.default;
 
