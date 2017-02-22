@@ -74,13 +74,13 @@ SynthDef(\saw, {|out, attack=0.001, sustain=1, pan, accelerate, freq, detune=0.1
 
 // foxdot
 SynthDef.new(\varsaw,
-  {|vib=0, out=0, slide=0, rate=1, sustain=1, slidefrom=1, fmod=0, amp=1, bits=0, pan=0.5, freq|
+  {|vib=0, out=0, slide=0, rate=1, sustain=1, slidefrom=1, fmod=0, amp=1, pan=0.5, freq|
     var osc, env;
     freq = freq + fmod;
     freq = Line.ar(freq * slidefrom, freq * (1 + slide), sustain);
     freq = Vibrato.kr(freq, rate: vib);
     osc=VarSaw.ar([freq, (freq * 1.005)], mul: (amp), width: rate);
-    env=EnvGen.ar(Env(levels: [0, amp, 0],curve: 'lin',times: (sustain / 2)), doneAction: 2);
+    env=EnvGen.ar(Env(levels: [amp/4, amp, amp/4], curve: 'lin', times: (sustain / 2)), doneAction: 2);
     osc=(osc * env);
     OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
 
