@@ -29,12 +29,10 @@ SynthDef(\hihat, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, freq
 	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan))
     }).add;
 
-SynthDef(\hihat1, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, n|
-  var freq, snd, env;
-	n = ((n>0)*n) + ((n<1)*3);
-	freq = (n*10).midicps;
+SynthDef(\hihat1, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, freq|
+  var snd, env;
 	env = Env.perc(attack, release).kr(doneAction: 2);
-	snd = RHPF.ar(BrownNoise.ar(amp) * env, 10000, 0.1) * env * amp;
+	snd = RHPF.ar(WhiteNoise.ar(amp) * env, freq, 0.1) * env * amp;
 	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan))
     }).add;
 
