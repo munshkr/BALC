@@ -36,6 +36,7 @@ It contains a list of _custom_ SynthDefs in addition to the stock SynthDefs prov
 * hihat
 * hihat1
 * bassy
+* bassy1p
 * bassy1
 * sin
 * fm

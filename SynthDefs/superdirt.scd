@@ -43,6 +43,14 @@ SynthDef(\bassy1, {|out=0, freq=440, ctf=1000, rq = 0.5, attack=0.001, release=1
 	OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan, env))
 }).add;
 
+SynthDef(\bassy1p, {|out=0, lctf=1200, hctf=200, rq = 0.5, attack=0.001, release=1, sustain=1, pan=0.5, detune=0.01, coef=0.5, lag=0, accelerate, freq|
+  var saw, env;
+	env = EnvGen.ar(Env.perc(attack, release), doneAction:2);
+  saw = BHiPass.ar(RLPF.ar(Saw.ar([Lag.kr(freq, lag), Lag.kr(freq+detune, lag)] * Line.kr(1,1+accelerate, sustain),1), lctf*env, rq), hctf, 1);
+  saw = OnePole.ar(saw, coef) * env;
+	OffsetOut.ar(out, DirtPan.ar(saw, ~dirt.numChannels, pan, env))
+}).add;
+
 SynthDef(\bassy, {|out=0, lctf=1200, hctf=200, rq = 0.5, attack=0.001, release=1, sustain=1, pan=0.5, detune=0.01, accelerate, freq|
   var saw, env;
 	env = EnvGen.ar(Env.perc(attack, release), doneAction:2);
