@@ -1,31 +1,40 @@
 (
 // balc
-SynthDef(\kick, {|out=0, attack=0.001, release=0.125, pan=0.5, freq|
-  var sound, env;
-  sound = HPF.ar(SinOsc.ar(freq * XLine.ar(1, 1/4, 1/16, doneAction:2)), 100);
+SynthDef(\kick, {|out=0, attack=0.001, release=0.125, detune=0.01, pan=0.5, freq|
+  var sound, env, xl;
+  xl = XLine.ar(1, 1/4, 1/16, doneAction:2);
+  sound = HPF.ar(SinOsc.ar([freq * xl, freq+detune * xl]), 100);
   env = EnvGen.ar(Env.perc(attack, release, 1, -4), doneAction:2);
   sound = sound * 2 * env;
 	OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan, env));
 }).add;
 
-SynthDef(\snare, {|out=0, amp = 0.1, freq = 1000, freq2 = 180, attack = 0.01, release = 0.2, pan = 0|
-	var snd1 = WhiteNoise.ar(amp);
-	var snd2 = SinOsc.ar(freq2,0,amp);
-	var env = Env.perc(attack, release).kr(doneAction: 2);
-	var sum = RHPF.ar(snd1 * env, 2500)+LPF.ar(snd2*env,1500);
-	OffsetOut.ar(out, DirtPan.ar(sum*amp, ~dirt.numChannels, pan))
-	}).add;
 
-SynthDef(\snare1, {
-  |out=0, attack=0.01, sustain=0.125, amp=1, pan=0, freq|
-  var sound = HPF.ar(BrownNoise.ar(1), freq) * EnvGen.ar(Env.perc(attack, sustain, 1, -4), doneAction:2);
+SynthDef(\snare, {
+  |out=0, attack=0.01, release=0.125, amp=1, pan=0, freq|
+  var env = EnvGen.ar(Env.perc(attack, release), doneAction:2);
+  var sound = HPF.ar(WhiteNoise.ar(1) * env, [freq, freq]) * env;
+  OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan))
+}).add;
+
+
+SynthDef(\sn_brown, {
+  |out=0, attack=0.01, release=0.125, amp=1, pan=0, freq|
+  var sound = HPF.ar(BrownNoise.ar(1), [freq, freq]) * EnvGen.ar(Env.perc(attack, release), doneAction:2);
+  OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan))
+}).add;
+
+
+SynthDef(\sn_pink, {
+  |out=0, attack=0.01, release=0.125, amp=1, pan=0, freq|
+  var sound = HPF.ar(PinkNoise.ar(1), [freq, freq]) * EnvGen.ar(Env.perc(attack, release), doneAction:2);
   OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan))
 }).add;
 
 SynthDef(\hihat, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, freq|
   var snd, env;
 	env = Env.perc(attack, release).ar(doneAction: 2);
-	snd = RHPF.ar(WhiteNoise.ar(amp) * env, 10000, 0.1) * env * amp;
+	snd = RHPF.ar(WhiteNoise.ar(1) * env, 10000, 0.1) * env * amp;
 	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan))
     }).add;
 
