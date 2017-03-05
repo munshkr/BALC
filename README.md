@@ -14,6 +14,9 @@ BALC.init("superdirt");
 // or
 BALC.init("foxdot");
 // or
+BALC.init("xi");
+
+// or
 BALC.init("superdirt2ch");
 // or
 BALC.init("superdirt8ch");
@@ -22,33 +25,17 @@ BALC.init("superdirt8ch");
 BALC.loadSynthDefs("superdirt");
 // or
 BALC.loadSynthDefs("foxdot");
+// or
+BALC.loadSynthDefs("xi");
 ```
 
 ## SynthDefs
 
-It contains a list of _custom_ SynthDefs in addition to the stock SynthDefs provided by both languages.
+It contains a list of _custom_ SynthDefs in addition to the stock SynthDefs provided by all these languages.
 
-### SuperDirt
-
-* kick
-* snare
-* snare1
-* hihat
-* hihat1
-* bassy
-* bassy1p
-* bassy1
-* sin
-* fm
-* saw
-* varsaw (a slight modification from the FoxDot's SynthDef)
-
-### FoxDot
-
-* kick8
-* kick
-* snare
-* bassy
+* SuperDirt
+* FoxDot
+* xi-language
 
 
 ## Why BALC?

@@ -4,6 +4,9 @@ BALC {
      *init{ |name|
            s = Server.default;
 
+           if(name == "xi"){
+                "Loading xi".postln;
+           };
            if(name == "superdirt"){
                 "Loading SuperDirt".postln;
                 SuperDirt.start;
