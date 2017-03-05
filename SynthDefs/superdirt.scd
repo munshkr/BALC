@@ -34,7 +34,7 @@ SynthDef(\sn_pink, {
 SynthDef(\hihat, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, freq|
   var snd, env;
 	env = Env.perc(attack, release).ar(doneAction: 2);
-	snd = RHPF.ar(WhiteNoise.ar(1) * env, 10000, 0.1) * env * amp;
+	snd = RHPF.ar(WhiteNoise.ar(1) * env, 10000, 0.1) * env * amp * 1.2;
 	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan))
     }).add;
 
