@@ -96,8 +96,19 @@ SynthDef.new(\varsaw,
     freq = Vibrato.kr(freq, rate: vib);
     osc=VarSaw.ar([freq, (freq * 1.005)], mul: (amp), width: rate);
     env=EnvGen.ar(Env(levels: [amp/4, amp, amp/4], curve: 'lin', times: (sustain / 2)), doneAction: 2);
-    osc=(osc * env);
+    osc=(osc * env) * 1.25;
     OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
 
   }).add;
+
+SynthDef.new(\pluck, {|vib=0, out=0, slide=0, rate=1, sustain=1, slidefrom=1, fmod=0, amp=1, freq, bits=0, pan=0.5|
+  var osc, env;
+  freq = freq + fmod;
+  freq = Line.ar(freq * slidefrom, freq * (1 + slide), sustain);
+  freq = Vibrato.kr(freq, rate: vib);
+  freq=[freq, (freq + LFNoise2.ar(50).range(-2, 2))];
+  osc=(SinOsc.ar((freq * 1.002), phase: VarSaw.ar(freq, width: Line.ar(1, 0.2, 2))) + (SinOsc.ar(freq, phase: VarSaw.ar(freq, width: Line.ar(1, 0.2, 2))) ));
+  osc=osc * XLine.ar(amp, (amp / 10000), (sustain * 4), doneAction: 2);
+  OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
+}).add;
 )
