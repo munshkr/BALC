@@ -111,4 +111,16 @@ SynthDef.new(\pluck, {|vib=0, out=0, slide=0, rate=1, sustain=1, slidefrom=1, fm
   osc=osc * XLine.ar(amp, (amp / 10000), (sustain * 4), doneAction: 2);
   OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
 }).add;
+
+SynthDef.new(\soprano,
+  {|out=0, vib=5, slide=0, rate=1, verb=0.5, sustain=1, slidefrom=1, fmod=0, bits=0, amp=1, pan=0.5, freq|
+    var osc, env;
+    freq = freq + fmod;
+    freq = Line.ar(freq * slidefrom, freq * (1 + slide), sustain);
+    freq = Vibrato.kr(freq, rate: vib);
+    osc=(SinOsc.ar((freq * 3), mul: amp) + SinOscFB.ar((freq * 3), mul: (amp / 2)));
+    env=EnvGen.ar(Env(levels: [amp/4, amp, amp/4], curve: 'lin', times: (sustain / 2)), doneAction: 2);
+    osc=(osc * env) * 8;
+    OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
+}).add;
 )
