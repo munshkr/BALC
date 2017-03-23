@@ -31,34 +31,20 @@ SynthDef(\sn_pink, {
   OffsetOut.ar(out, DirtPan.ar(sound, ~dirt.numChannels, pan))
 }).add;
 
-SynthDef(\hihat, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, freq|
+SynthDef(\hat, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, freq|
   var snd, env;
 	env = Env.perc(attack, release).ar(doneAction: 2);
 	snd = RHPF.ar(WhiteNoise.ar(1) * env, 10000, 0.1) * env * amp * 1.2;
 	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan))
     }).add;
 
-SynthDef(\hihat1, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, freq|
+SynthDef(\hat1, {|out=0, amp = 1, attack = 0.01, release = 0.1, pan = 0.5, freq|
   var snd, env;
 	env = Env.perc(attack, release).kr(doneAction: 2);
 	snd = RHPF.ar(WhiteNoise.ar(amp) * env, freq, 0.1) * env * amp;
 	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan))
     }).add;
 
-SynthDef(\bassy1, {|out=0, freq=440, ctf=1000, rq = 0.5, attack=0.001, release=1, lpcutoff=5000, amp=0.1, mul=1, pan=0.5|
-	var sig = Saw.ar(freq);
-	var env = EnvGen.ar(Env.perc(attack, release), doneAction:2);
-	sig = mul * BHiPass.ar(RLPF.ar(sig, lpcutoff*env, rq), ctf, rq);
-	OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan, env))
-}).add;
-
-SynthDef(\bassy1p, {|out=0, lctf=1200, hctf=200, rq = 0.5, attack=0.001, release=1, sustain=1, pan=0.5, detune=0.01, coef=0.5, lag=0, accelerate, freq|
-  var saw, env;
-	env = EnvGen.ar(Env.perc(attack, release), doneAction:2);
-  saw = BHiPass.ar(RLPF.ar(Saw.ar([Lag.kr(freq, lag), Lag.kr(freq+detune, lag)] * Line.kr(1,1+accelerate, sustain),1), lctf*env, rq), hctf, 1);
-  saw = OnePole.ar(saw, coef) * env;
-	OffsetOut.ar(out, DirtPan.ar(saw, ~dirt.numChannels, pan, env))
-}).add;
 
 SynthDef(\bassy, {|out=0, lctf=1200, hctf=200, rq = 0.5, attack=0.001, release=1, sustain=1, pan=0.5, detune=0.01, accelerate, freq|
   var saw, env;
@@ -120,7 +106,7 @@ SynthDef.new(\soprano,
     freq = Vibrato.kr(freq, rate: vib);
     osc=(SinOsc.ar((freq * 3), mul: amp) + SinOscFB.ar((freq * 3), mul: (amp / 2)));
     env=EnvGen.ar(Env(levels: [amp/4, amp, amp/4], curve: 'lin', times: (sustain / 2)), doneAction: 2);
-    osc=(osc * env) * 8;
+    osc=(osc * env) * 6;
     OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
 }).add;
 
@@ -132,7 +118,7 @@ SynthDef.new(\marimba,
     freq = Vibrato.kr(freq, rate: vib);
     osc=Klank.ar(`[[0.5, 1, 4, 9], [0.5, 1, 1, 1], [1, 1, 1, 1]], PinkNoise.ar([0.007, 0.007]), [freq, freq], [0, 2]);
     env=EnvGen.ar(Env.perc(level: amp*3,curve: -6,attackTime: 0.001,releaseTime: sus+sustain), doneAction: 0);
-    osc=(osc * env) * 8;
+    osc=(osc * env) * 4;
     OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
 }).add;
 
@@ -152,15 +138,15 @@ SynthDef.new(\pulse,
 
 
 SynthDef.new(\blip,
-  {|out=0, vib=0, slide=0, rate=1, sus=1, slidefrom=1, fmod=0, amp=1, bits=0, pan=0.5, freq|
+  {|out=0, vib=0, slide=0, rate=1, sustain=1, slidefrom=1, fmod=0, amp=1, bits=0, pan=0.5, freq|
     var osc, env;
     freq = freq + fmod;
-    freq = Line.ar(freq * slidefrom, freq * (1 + slide), sus);
+    freq = Line.ar(freq * slidefrom, freq * (1 + slide), sustain);
     freq = Vibrato.kr(freq, rate: vib);
     amp=(amp + 1e-05);
     freq=[freq, (freq + LFNoise2.ar(50).range(-2, 2))];
     osc=((LFCub.ar((freq * 1.002), iphase: 1.5) + (LFTri.ar(freq, iphase: Line.ar(2, 0, 0, 2)) * 0.3)) * Blip.ar((freq / 2), rate));
-    osc=((osc * XLine.ar(amp, (amp / 10000), (sus * 2))) );
+    osc=((osc * XLine.ar(amp, (amp / 10000), (sustain * 2))) );
     OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
 }).add;
 
@@ -175,4 +161,43 @@ SynthDef.new(\noise,
     osc=(osc * env)*4;
     OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
 }).add;
+
+SynthDef.new(\charm,
+  {|vib=0, out=0, slide=0, rate=1, sustain=1, slidefrom=1, fmod=0, amp=1, bits=0, pan=0.5, freq|
+    var osc, env;
+    freq = freq + fmod;
+    freq = Line.ar(freq * slidefrom, freq * (1 + slide), sustain);
+    freq = Vibrato.kr(freq, rate: vib);
+    osc=(SinOsc.ar([freq, (freq + 4)], mul: amp) + VarSaw.ar((freq * 8), 10, mul: (amp / 8)));
+    osc=LPF.ar(osc, SinOsc.ar(Line.ar(1, (rate * 4), (sustain / 8)), 0, (freq * 2), ((freq * 2) + 10)));
+    env=EnvGen.ar(Env.perc(level: amp,curve: 0,attackTime: 0.01,releaseTime: sustain), doneAction: 0);
+    osc=(osc * env)*8;
+    OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
+}).add;
+
+SynthDef.new(\pads,
+  {|out=0, vib=0, slide=0, rate=1, sus=1, slidefrom=1, fmod=0, amp=1, bits=0, pan=0.5, freq|
+    var osc, env;
+    freq = freq + fmod;
+    freq = Line.ar(freq * slidefrom, freq * (1 + slide), sus);
+    freq = Vibrato.kr(freq, rate: vib);
+    osc=SinOsc.ar([freq, (freq + 2)], mul: amp);
+    env=EnvGen.ar(Env.perc(level: amp,curve: 0,attackTime: 0.01,releaseTime: sus), doneAction: 0);
+    osc=(osc * env)*4;
+    OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
+}).add;
+
+SynthDef.new(\crunch,
+  {|vib=0, out=0, slide=0, rate=1, sustain=1, slidefrom=1, fmod=0, amp=1, bits=0, pan=0.5, freq|
+    var osc, env;
+    freq = freq + fmod;
+    freq = Line.ar(freq * slidefrom, freq * (1 + slide), sustain);
+    freq = Vibrato.kr(freq, rate: vib);
+    //amp=(amp * 0.5);
+    osc=LFNoise0.ar(((Crackle.kr(1.75) * freq) * 30), mul: amp);
+    env=EnvGen.ar(Env.perc(level: (amp),curve: 0,attackTime: 0.01,releaseTime: 0.1+sustain), doneAction: 0);
+    osc=(osc * env)*8;
+    OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
+}).add;
+
 )
