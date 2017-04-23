@@ -78,14 +78,14 @@ SynthDef(\piano, {
 // other
 
 SynthDef.new(\kell,{
-  |out, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.25, gate=1, pan=0, freq|
+  |out, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.25, gate=1, kfreq=#[100, 200, 300], pan=0, freq|
   var sig, env;
   amp = amp * 0.9;
   env = EnvGen.ar(Env.adsr(atk, dec, sus, rel), gate:gate, doneAction: 2);
   sig = Klang.ar(`[
-    [243.76316562296.rand, 173.56766553642.rand, 85.131794236476.rand]+freq,
-    0.5.rand!3,
-    pi.rand!3], 1, 0)*0.5;
+    kfreq+freq,
+    0.5.rand!kfreq.size,
+    pi.rand!kfreq.size], 1, 0)*0.5;
   sig = sig * amp * env;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
 }).add;
@@ -215,7 +215,7 @@ SynthDef(\break,
     var pb, brk, env, sr;
     sr = 44100;
     env = EnvGen.ar(Env.perc, doneAction:2);
-    pb = PlayBuf.ar(1, sample, loop:0);
+    pb = PlayBuf.ar(2, sample, loop:0);
     brk = Breakcore.ar(bufnum, pb, Impulse.kr(LFNoise0.kr(4,10,12)), Rand(sr/4, sr), 0) * env;
     OffsetOut.ar(out, Pan2.ar(brk, pan));
 }).add;
@@ -225,9 +225,9 @@ SynthDef(\sampler,
     var sig, env, begin, sr;
     sr = 44100;
     begin = BufDur.kr(sample)*sr * pos;
-    env = EnvGen.ar(Env.linen(0.0,rel,0.0,1));
-    sig = PlayBuf.ar(1, sample, rate:BufRateScale.ir(sample) * rate, trigger:1, startPos:begin, loop:0, doneAction:2);
-    sig = sig * env * amp;
+//    env = EnvGen.ar(Env.linen(0.0,rel,0.0,1));
+    sig = PlayBuf.ar(2, sample, rate:BufRateScale.ir(sample) * rate, trigger:1, startPos:begin, loop:0, doneAction:2);
+    sig = sig * amp;
     OffsetOut.ar(out,Pan2.ar(sig, pan));
 }).add;
 )
