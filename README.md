@@ -1,42 +1,29 @@
 # BALC
 
-A very simple SuperCollider Quark to start `SuperDirt` or `FoxDot`.
+For the SuperDirt/FoxDot helpers see `other-systems` branch. I don't think I'll maintaint those anymore since I'll focus on SuperCollider only.  
+There are three files:
 
+## `setup.scd`
+
+My current SuperCollider configuration plus a *mastering* `Ndef` (see [here](https://github.com/musikinformatik/SuperDirt/blob/master/hacks/filtering-dirt-output.scd) and [here](https://mccormick.cx/news/entries/heuristic-for-algorave-mastering) for reference) and an "Amen" samples loader.
+
+## `synths.scd`
+
+A list of `SynthDef`s written by me except when noted.  
+Here's a template for creating new `SynthDef`s
 ```
-Quarks.install("http://github.com/lvm/BALCQuark")
-// and go to `Language -> Recompile Class Library` in the main menu.
-
-// or
-Quarks.update("http://github.com/lvm/BALCQuark")
-// and go to `Language -> Recompile Class Library` in the main menu.
-
-BALC.init("superdirt");
-// or
-BALC.init("foxdot");
-// or
-BALC.init("xi");
-
-// or
-BALC.init("superdirt2ch");
-// or
-BALC.init("superdirt8ch");
-
-
-BALC.loadSynthDefs("superdirt");
-// or
-BALC.loadSynthDefs("foxdot");
-// or
-BALC.loadSynthDefs("xi");
+SynthDef(\name, {
+  |out, amp=0.9, [...], pan=0, freq|
+  var sig, env;
+  amp = amp * 0.9;
+  [...]
+  OffsetOut.ar(out, Pan2.ar(sig, pan));
+}).add
 ```
 
-## SynthDefs
+## `fx.scd`
 
-It contains a list of _custom_ SynthDefs in addition to the stock SynthDefs provided by all these languages.
-
-* SuperDirt
-* FoxDot
-* xi-language
-
+Just a list of various effects.
 
 ## Why BALC?
 
