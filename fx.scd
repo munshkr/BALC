@@ -1,7 +1,13 @@
 (
+// simple patch cord
+SynthDef.new(\patch,{
+  |in, out, amp=0.9|
+  OffsetOut.ar(out, In.ar(in, 2) * (amp*0.9));
+}).add;
+
 // filters
 SynthDef.new(\lpf,{
-  |in, out=0, amp=0.9, rq=1, freq=19000|
+  |in, out=0, amp=0.9, freq=19000|
   var sig;
   sig = In.ar(in, 2);
   sig = LPF.ar(sig, freq:freq, mul:amp);
@@ -9,10 +15,19 @@ SynthDef.new(\lpf,{
 }).add;
 
 SynthDef.new(\hpf,{
-  |in, out=0, amp=0.9, rq=1, freq=10|
+  |in, out=0, amp=0.9, freq=10|
   var sig;
   sig = In.ar(in, 2);
   sig = HPF.ar(sig, freq:freq, mul:amp);
+  OffsetOut.ar(out, sig);
+}).add;
+
+// ??????
+SynthDef.new(\bpf,{
+  |in, out=0, amp=0.9, rq=1, freq=1000|
+  var sig;
+  sig = In.ar(in, 2);
+  sig = BPF.ar(sig, freq:freq, rq:rq, mul:amp);
   OffsetOut.ar(out, sig);
 }).add;
 
@@ -40,6 +55,13 @@ SynthDef.new(\distort,{
   dst = In.ar(in, 2);
   dst = CrossoverDistortion.ar(dst, amp, smooth);
   OffsetOut.ar(out, dst);
+}).add;
+
+SynthDef(\tremolo, {
+  |in, out=0, freq=1|
+  var fx, sig;
+  sig = In.ar(in, 2) * SinOsc.ar(freq:freq, phase:0, mul:0.9, add:0);
+  Out.ar(out, sig)
 }).add;
 
 

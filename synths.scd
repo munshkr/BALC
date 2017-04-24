@@ -78,14 +78,14 @@ SynthDef(\piano, {
 // other
 
 SynthDef.new(\kell,{
-  |out, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.25, gate=1, kfreq=#[100, 200, 300], pan=0, freq|
+  |out, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.25, gate=1, pan=0, freq|
   var sig, env;
   amp = amp * 0.9;
   env = EnvGen.ar(Env.adsr(atk, dec, sus, rel), gate:gate, doneAction: 2);
   sig = Klang.ar(`[
-    kfreq+freq,
-    0.5.rand!kfreq.size,
-    pi.rand!kfreq.size], 1, 0)*0.5;
+    freq*[0.5, 2, 6],
+    0.5.rand!3,
+    pi.rand!3], 1, 0)*0.5;
   sig = sig * amp * env;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
 }).add;
@@ -157,31 +157,32 @@ SynthDef.new(\soprano,
 
 
 SynthDef.new(\varsaw,
-  {|vib=0, out=0, slide=0, rate=1, sustain=1, slidefrom=1, fmod=0, amp=1, pan=0.5, freq|
+  {|out=0, amp=0.9, vib=0, slide=0, rate=1, atk=0.01, sus=1, slidefrom=1, fmod=0, pan=0, freq|
   var osc, env;
   amp = amp * 0.9;
   freq = freq + fmod;
-  freq = Line.ar(freq * slidefrom, freq * (1 + slide), sustain);
+  freq = Line.ar(freq * slidefrom, freq * (1 + slide), sus);
   freq = Vibrato.kr(freq, rate: vib);
   osc=VarSaw.ar([freq, (freq * 1.005)], mul: (amp), width: rate);
-  env=EnvGen.ar(Env(levels: [amp, amp, amp], curve: 'lin', times: (sustain / 2)), doneAction: 2);
-  osc = osc * env * amp;
+  env=EnvGen.ar(Env(levels: [amp, amp, amp], curve: 'lin', times: (sus / 2)), doneAction: 2);
+  osc = osc * env * amp * EnvGen.ar(Env.perc(atk,sus), doneAction:2);
   OffsetOut.ar(out, Pan2.ar(osc, pan));
 
   }).add;
 
-/*SynthDef.new(\pluck, {|vib=0, out=0, slide=0, sustain=1, slidefrom=1, fmod=0, amp=0.9, rate=1, bits=0, pan=0.5, freq|
+SynthDef.new(\pluck, {
+  |out=0, amp=0.9, vib=0, slide=0, atk=0.01, sus=1, slidefrom=1, fmod=0, rate=1, bits=0, pan=0, freq|
   var osc, env;
   amp = amp * 0.9;
   freq = freq + fmod;
-  freq = Line.ar(freq * slidefrom, freq * (1 + slide), sustain);
+  freq = Line.ar(freq * slidefrom, freq * (1 + slide), sus);
   freq = Vibrato.kr(freq, rate: vib);
   freq=[freq, (freq + LFNoise2.ar(50).range(-2, 2))];
   osc=(SinOsc.ar((freq * 1.002), phase: VarSaw.ar(freq, width: Line.ar(1, 0.2, 2))) + (SinOsc.ar(freq*rate, phase: VarSaw.ar(freq, width: Line.ar(1, 0.2, 2))) ));
-  osc=osc * XLine.ar(amp, (amp / 10000), (sustain * 4), doneAction: 2)*0.75;
-  osc = osc * env * amp;
+  osc=osc * XLine.ar(amp, (amp / 10000), (sus * 4), doneAction: 2)*0.25;
+  osc = osc * amp * EnvGen.ar(Env.perc(atk,sus), doneAction:2);
   OffsetOut.ar(out, Pan2.ar(osc, pan));
-}).add;*/
+}).add;
 
 // noise
 

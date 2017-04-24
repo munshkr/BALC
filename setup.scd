@@ -10,7 +10,8 @@ s.waitForBoot {
   StageLimiter.activate;
 	("synths.scd").loadRelative;
   ("fx.scd").loadRelative;
-  3.wait;
+  2.wait;
+  Pdef.defaultQuant(4);
   ~chan = Array.fill(9, { Bus.audio(s, 2) });
 	"BALC LOADED".postln;
 };
@@ -44,7 +45,7 @@ s.waitForBoot {
 Ndef(\mix, {
 	var level = 0.5;
 	var distortion = 1;
-	var reverbFeedback = 0.1;
+	var reverbFeedback = 0.125;
 	var all = ~chan.collect { |each| InBus.ar(each, each.numChannels) };
 	var mix = all.sum { |x|
 		var d = { 0.01.rand } ! x.size;
@@ -61,7 +62,7 @@ Ndef(\mix, {
 }).play;
 )
 
-// clean
+// clear all
 (
 Ndef(\mix).clear;
 ~chan.do { |x| x.free };
