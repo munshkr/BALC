@@ -35,9 +35,9 @@ SynthDef.new(\bpf,{
 
 SynthDef.new(\reverb,{
   |in, out=0, amp=0.9, mix=0.33, room=0.5, damp=0.5|
-  var rev;
-  rev = In.ar(in, 2);
-  rev = FreeVerb.ar(rev, mix, room, damp, amp);
+  var sig;
+  sig = In.ar(in, 2);
+  sig = FreeVerb.ar(rev, mix, room, damp, amp);
   OffsetOut.ar(out, rev);
 }).add;
 
@@ -51,18 +51,27 @@ SynthDef(\delay, {
 
 SynthDef.new(\distort,{
   |in, out=0, amp=0.125, smooth=0.75|
-  var dst;
-  dst = In.ar(in, 2);
-  dst = CrossoverDistortion.ar(dst, amp, smooth);
+  var sig;
+  sig = In.ar(in, 2);
+  sig = CrossoverDistortion.ar(dst, amp, smooth);
   OffsetOut.ar(out, dst);
 }).add;
 
 SynthDef(\tremolo, {
   |in, out=0, freq=1|
-  var fx, sig;
+  var sig;
   sig = In.ar(in, 2) * SinOsc.ar(freq:freq, phase:0, mul:0.9, add:0);
   Out.ar(out, sig)
 }).add;
+
+SynthDef(\wah, {
+  |in, out, amp=0.9, low=100, hi=12500, freq=5|
+  var sig, env;
+  sig = In.ar(in, 2) * (amp*0.9);
+  sig = LPF.ar(sig, LinExp.ar(SinOsc.ar(freq), -1, 1, low, hi));
+  OffsetOut.ar(out, sig);
+}).add;
+)
 
 
 // others
