@@ -66,16 +66,16 @@ SynthDef(\piano, {
 
 // other
 
--SynthDef(\pium, {
--  |out=0, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.5, accel=0.01, pan=0, freq=80|
--  var sig, env, xl;
--  amp = amp*0.9;
--  xl = XLine.kr(start:freq, end:freq*accel, dur:rel, mul: amp, doneAction:2);
--       env = EnvGen.ar(Env.perc(attackTime: atk, releaseTime: rel, level: amp, curve: -8), timeScale: sus, doneAction: 2);
--  sig = LPF.ar(Ringz.ar(Impulse.ar(1), freq, dec, amp), 800)  *env;
--  sig = sig * amp;
--  OffsetOut.ar(out, Pan2.ar(sig, pan));
--}).add;
+SynthDef(\pium, {
+  |out=0, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.5, accel=0.01, pan=0, freq=80|
+  var sig, env, xl;
+  amp = amp*0.9;
+  xl = XLine.kr(start:freq, end:freq*accel, dur:rel, mul: amp, doneAction:2);
+       env = EnvGen.ar(Env.perc(attackTime: atk, releaseTime: rel, level: amp, curve: -8), timeScale: sus, doneAction: 2);
+  sig = LPF.ar(Ringz.ar(Impulse.ar(1), freq, dec, amp), 800)  *env;
+  sig = sig * amp;
+  OffsetOut.ar(out, Pan2.ar(sig, pan));
+}).add;
 
 
 SynthDef.new(\kell,{
