@@ -6,10 +6,10 @@ SynthDef(\kick, {
   amp = amp*0.9;
   xl = XLine.kr(start:freq, end:freq*accel, dur:rel, mul: amp, doneAction:2);
 	env = EnvGen.ar(Env.perc(attackTime: atk, releaseTime: rel, level: amp, curve: -8), timeScale: sus, doneAction: 2);
-  sig = HPF.ar(SinOsc.ar(xl), 20);
+  sig = HPF.ar(SinOsc.ar(xl), 60);
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\snare, {
   |out=0, amp=0.9, atk=0.01, sus=1, rel=0.5, pan=0, freq=1250|
@@ -19,7 +19,7 @@ SynthDef(\snare, {
   sig = HPF.ar(WhiteNoise.ar(1) * env, freq);
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\hat, {
   |out=0, amp=0.9, atk=0.01, sus=1, rel=0.05, rq=0.25, pan=0, freq=0|
@@ -29,7 +29,7 @@ SynthDef(\hat, {
   sig = RHPF.ar(WhiteNoise.ar(1) * env, (freq+10000), rq);
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 // strings
 
@@ -41,7 +41,7 @@ SynthDef(\bassy, {
   sig = BHPF.ar(RLPF.ar(SawDPW.ar(freq * Line.kr(1,1+accel, sus+rel),1), lctf*env, rq), freq:hctf);
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\bassy3, {
   |out=0, amp=0.9, atk=0.01, sus=0.5, rel=2, ffreq=1200, rq = 0.5, dist=0, detune=0.01, accel=0.01, pan=0, freq|
@@ -51,7 +51,7 @@ SynthDef(\bassy3, {
   sig = RLPFD.ar(SawDPW.ar(freq * Line.kr(1,1+accel, sus+rel),1), ffreq:ffreq, res:rq, dist:dist, mul:amp*2);
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\piano, {
   |out=0, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.25, gate=0.5, stretch=0.1, tune=0.5, feed=0.5, pan=0, freq|
@@ -61,7 +61,7 @@ SynthDef(\piano, {
   sig = MdaPiano.ar(freq, gate:gate, stretch:stretch, tune:tune, decay:dec, sustain: sus, release:rel, stereo:pan, mul:amp);
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 
 // other
@@ -75,7 +75,7 @@ SynthDef(\pium, {
   sig = LPF.ar(Ringz.ar(Impulse.ar(1), freq, dec, amp), 800)  *env;
   sig = sig * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 
 SynthDef.new(\kell,{
@@ -89,7 +89,7 @@ SynthDef.new(\kell,{
     pi.rand!2], 1, 0)*0.25;
   sig = sig * amp * env;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\dust, {
   |out=0, amp=0.9, atk=0.01, sus=1, rel=0.25, rq=0.25, detune=1, pan=0, freq|
@@ -99,7 +99,7 @@ SynthDef(\dust, {
   sig = LPF.ar(Ringz.ar(Dust.ar(freq), freq*2.rand.max(9000)), 8000)*0.5;
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\pulse, {
   |out, amp=0.9, atk=0.001, sus=1, rel=0.5, accel=0.01, detune=0.1, ffreq=1250, pan=0, freq|
@@ -109,7 +109,7 @@ SynthDef(\pulse, {
 	sig = RLPF.ar(LFPulse.ar([freq, freq],0.5), freq:ffreq, rq:1, mul:amp);
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\can, {
   |out=0, amp=0.9, atk=0.01, sus=1, rel=0.25, vib=10, phase=0.5, pan=0, freq|
@@ -119,7 +119,7 @@ SynthDef(\can, {
   sig = Vibrato.ar(FreqShift.ar(LFTri.ar(freq, phase), freq/2), rate:vib);
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 
 SynthDef(\fm, {
@@ -131,7 +131,7 @@ SynthDef(\fm, {
   car = SinOsc.ar(([freq, freq+detune] * carPartial) + mod,	0, mul);
   sig = car * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "@munshkr").add;
+}, metadata: (credit: "@munshkr")).add;
 
 SynthDef(\sin, {
   |out, amp=0.9, atk=0.001, sus=1, rel=1, accel=0, detune=0.1, pan=0, freq|
@@ -141,7 +141,7 @@ SynthDef(\sin, {
 	sig = SinOsc.ar([freq, freq+detune] * Line.kr(1,1+accel, sus));
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "@munshkr").add;
+}, metadata: (credit: "@munshkr")).add;
 
 SynthDef(\saw, {
   |out, amp=0.9, atk=0.001, sus=1, rel=0.5, accel=0.01, detune=0.1, pan=0, freq|
@@ -151,7 +151,7 @@ SynthDef(\saw, {
 	sig = SawDPW.ar([freq, freq+detune] * Line.kr(1,1+accel, sus));
   sig = sig * env * amp;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
-}, metadata: (credit: "@munshkr").add;
+}, metadata: (credit: "@munshkr")).add;
 
 // foxdot
 
@@ -166,7 +166,7 @@ SynthDef.new(\soprano,
   osc = (SinOsc.ar((freq * 3), mul: amp) + SinOscFB.ar((freq * 3), mul: (amp / 2)));
   osc = osc * env * amp;
   OffsetOut.ar(out, Pan2.ar(osc, pan));
-}, metadata: (credit: "https://github.com/Qirky/FoxDot").add;
+}, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 
 SynthDef.new(\varsaw,
@@ -180,7 +180,7 @@ SynthDef.new(\varsaw,
   env=EnvGen.ar(Env(levels: [amp, amp, amp], curve: 'lin', times: (sus / 2)), doneAction: 2);
   osc = osc * env * amp * EnvGen.ar(Env.perc(atk,sus), doneAction:2);
   OffsetOut.ar(out, Pan2.ar(osc, pan));
-}, metadata: (credit: "https://github.com/Qirky/FoxDot").add;
+}, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 SynthDef.new(\pluck, {
   |out=0, amp=0.9, vib=0, slide=0, atk=0.01, sus=1, slidefrom=1, fmod=0, rate=1, bits=0, pan=0, freq|
@@ -194,7 +194,7 @@ SynthDef.new(\pluck, {
   osc=osc * XLine.ar(amp, (amp / 10000), (sus * 4), doneAction: 2)*0.25;
   osc = osc * amp * EnvGen.ar(Env.perc(atk,sus), doneAction:2);
   OffsetOut.ar(out, Pan2.ar(osc, pan));
-}, metadata: (credit: "https://github.com/Qirky/FoxDot").add;
+}, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 // noise
 
@@ -208,7 +208,7 @@ SynthDef.new(\crunch,
   osc = LFNoise0.ar(((Crackle.kr(1.75) * freq) * 30), mul: amp);
   osc = osc * env * amp;
   OffsetOut.ar(out, Pan2.ar(osc, pan));
-}, metadata: (credit: "https://github.com/Qirky/FoxDot").add;
+}, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 SynthDef.new(\noise,
   {|out=0, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.5, vib=0, slide=0, rate=1,  slidefrom=1, fmod=0, rq=1, lctf=800, pan=0, freq|
@@ -220,7 +220,7 @@ SynthDef.new(\noise,
     env=EnvGen.ar(Env.adsr(attackTime: atk, decayTime:dec, sustainLevel:sus, releaseTime:rel), doneAction:2);
   osc = osc * env * amp;
   OffsetOut.ar(out, Pan2.ar(osc, pan));
-}, metadata: (credit: "https://github.com/Qirky/FoxDot").add;
+}, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 // samples
 SynthDef(\break,
@@ -231,7 +231,7 @@ SynthDef(\break,
     pb = PlayBuf.ar(2, sample, loop:0);
     brk = Breakcore.ar(bufnum, pb, Impulse.kr(LFNoise0.kr(4,10,12)), Rand(sr/4, sr), 0) * env;
     OffsetOut.ar(out, Pan2.ar(brk, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\sampler,
   {|out, amp=0.9, atk=0.01, rel=1, pos=0, sample=0, rate=1, pan=0|
@@ -242,5 +242,5 @@ SynthDef(\sampler,
     sig = PlayBuf.ar(2, sample, rate:BufRateScale.ir(sample) * rate, trigger:1, startPos:begin, loop:0, doneAction:2);
     sig = sig * amp;
     OffsetOut.ar(out,Pan2.ar(sig, pan));
-}, metadata: (credit: "http://github.com/lvm/balc").add;
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
 )
