@@ -78,7 +78,7 @@ SynthDef(\bassy3, {
 SynthDef(\piano, {
   |out=0, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.25, gate=0.5, stretch=0.1, tune=0.5, feed=0.5, pan=0, freq|
   var sig, env;
-  amp = amp*0.9;
+  amp = amp * 0.9;
   env = EnvGen.ar(Env.perc(atk, rel), timeScale: sus, doneAction:2);
   sig = MdaPiano.ar(freq, gate:gate, stretch:stretch, tune:tune, decay:dec, sustain: sus, release:rel, stereo:pan, mul:amp);
   sig = sig * env;
@@ -186,7 +186,7 @@ SynthDef.new(\soprano,
   env = EnvGen.ar(Env.perc(attackTime: atk, releaseTime: rel, level: amp), timeScale: sus, doneAction: 2);
   osc = (SinOsc.ar((freq * 3), mul: amp) + SinOscFB.ar((freq * 3), mul: (amp / 2)));
   osc = osc * env;
-  OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+  OffsetOut.ar(out, Pan2.ar(osc, pan, amp));
 }, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 
@@ -200,7 +200,7 @@ SynthDef.new(\varsaw,
   osc=VarSaw.ar([freq, (freq * 1.005)], mul: (amp), width: rate);
   env=EnvGen.ar(Env(levels: [amp, amp, amp], curve: 'lin', times: (sus / 2)), doneAction: 2);
   osc = osc * env * EnvGen.ar(Env.perc(atk,sus), doneAction:2);
-  OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+  OffsetOut.ar(out, Pan2.ar(osc, pan, amp));
 }, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 SynthDef.new(\pluck, {
@@ -214,7 +214,7 @@ SynthDef.new(\pluck, {
   osc=(SinOsc.ar((freq * 1.002), phase: VarSaw.ar(freq, width: Line.ar(1, 0.2, 2))) + (SinOsc.ar(freq*rate, phase: VarSaw.ar(freq, width: Line.ar(1, 0.2, 2))) ));
   osc=osc * XLine.ar(amp, (amp / 10000), (sus * 4), doneAction: 2)*0.25;
   osc = osc * EnvGen.ar(Env.perc(atk,sus), doneAction:2);
-  OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+  OffsetOut.ar(out, Pan2.ar(osc, pan, amp));
 }, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 // noise
@@ -228,7 +228,7 @@ SynthDef.new(\crunch,
   env = EnvGen.ar(Env.perc(level: (amp),curve: 0,attackTime: 0.01,releaseTime: 0.1+sus), doneAction: 2);
   osc = LFNoise0.ar(((Crackle.kr(1.75) * freq) * 30), mul: amp);
   osc = osc * env;
-  OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+  OffsetOut.ar(out, Pan2.ar(osc, pan, amp));
 }, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 SynthDef.new(\noise,
@@ -240,18 +240,19 @@ SynthDef.new(\noise,
     osc = RLPF.ar(LFNoise0.ar(freq, amp), lctf, rq, amp);
     env=EnvGen.ar(Env.adsr(attackTime: atk, decayTime:dec, sustainLevel:sus, releaseTime:rel), doneAction:2);
   osc = osc * env;
-  OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+  OffsetOut.ar(out, Pan2.ar(osc, pan, amp));
 }, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 
 // samples
 SynthDef(\break,
-  {|out, bufnum=0, sample=0, pan=0|
+  {|out, amp=0.9, bufnum=0, sample=0, pan=0|
     var pb, brk, env, sr;
+    amp = amp * 0.9;
     sr = 44100;
     env = EnvGen.ar(Env.perc, doneAction:2);
     pb = PlayBuf.ar(2, sample, loop:0);
     brk = Breakcore.ar(bufnum, pb, Impulse.kr(LFNoise0.kr(4,10,12)), Rand(sr/4, sr), 0) * env;
-  OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
+  OffsetOut.ar(out, Pan2.ar(brk, pan, amp));
 }, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\sampler,
