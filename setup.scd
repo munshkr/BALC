@@ -17,6 +17,22 @@ s.waitForBoot {
 };
 )
 
+(
+s.plotTree;
+)
+
+(
+p = ProxySpace.push(s);
+p.clock = TempoClock.default;
+p.clock.tempo = 2.0;
+p.fadeTime = 0.05;
+p.quant = 4;
+)
+
+(
+ProxyMixer.new(p);
+)
+
 // amen break
 (
 ~buf = Buffer.alloc(s,s.sampleRate,2);
@@ -45,7 +61,7 @@ s.waitForBoot {
 Ndef(\mix, {
 	var level = 0.5;
 	var distortion = 1;
-	var reverbFeedback = 0.125;
+	var reverbFeedback = 0.1;
 	var all = ~chan.collect { |each| InBus.ar(each, each.numChannels) };
 	var mix = all.sum { |x|
 		var d = { 0.01.rand } ! x.size;

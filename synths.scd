@@ -11,17 +11,6 @@ SynthDef(\kick, {
   OffsetOut.ar(out, Pan2.ar(sig, pan));
 }).add;
 
-SynthDef(\kick8, {
-  |out=0, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.5, accel=0.01, pan=0, freq=80|
-  var sig, env, xl;
-  amp = amp*0.9;
-  xl = XLine.kr(start:freq, end:freq*accel, dur:rel, mul: amp, doneAction:2);
-	env = EnvGen.ar(Env.perc(attackTime: atk, releaseTime: rel, level: amp, curve: -8), timeScale: sus, doneAction: 2);
-  sig = LPF.ar(Ringz.ar(Impulse.ar(1), freq, dec, amp), 800)  *env;
-  sig = sig * amp;
-  OffsetOut.ar(out, Pan2.ar(sig, pan));
-}).add;
-
 SynthDef(\snare, {
   |out=0, amp=0.9, atk=0.01, sus=1, rel=0.5, pan=0, freq=1250|
   var sig, env;
@@ -77,15 +66,27 @@ SynthDef(\piano, {
 
 // other
 
+-SynthDef(\pium, {
+-  |out=0, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.5, accel=0.01, pan=0, freq=80|
+-  var sig, env, xl;
+-  amp = amp*0.9;
+-  xl = XLine.kr(start:freq, end:freq*accel, dur:rel, mul: amp, doneAction:2);
+-       env = EnvGen.ar(Env.perc(attackTime: atk, releaseTime: rel, level: amp, curve: -8), timeScale: sus, doneAction: 2);
+-  sig = LPF.ar(Ringz.ar(Impulse.ar(1), freq, dec, amp), 800)  *env;
+-  sig = sig * amp;
+-  OffsetOut.ar(out, Pan2.ar(sig, pan));
+-}).add;
+
+
 SynthDef.new(\kell,{
-  |out, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.25, gate=1, pan=0, freq|
+  |out, amp=0.9, atk=0.01, dec=0.05, sus=1, rel=0.25, gate=1, pan=0, freq|
   var sig, env;
   amp = amp * 0.9;
   env = EnvGen.ar(Env.adsr(atk, dec, sus, rel), gate:gate, doneAction: 2);
   sig = Klang.ar(`[
-    freq*[0.5, 2, 6],
-    0.5.rand!3,
-    pi.rand!3], 1, 0)*0.5;
+    freq*[0.5,0.5],
+    0.25!2,
+    pi.rand!2], 1, 0)*0.25;
   sig = sig * amp * env;
   OffsetOut.ar(out, Pan2.ar(sig, pan));
 }).add;
