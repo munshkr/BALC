@@ -88,6 +88,17 @@ SynthDef(\piano, {
 
 // other
 
+SynthDef(\23, {
+  |out, amp=0.9, atk=0.01, sus=0.5, rel=0.25, fb=0, detune=1.01, pan=0, freq|
+  var par, tri, sig, env;
+	env = EnvGen.ar(Env.linen(attackTime:atk, sustainTime:sus, releaseTime:rel), timeScale:sus/2, doneAction:2);
+  par = LFPar.ar(XLine.kr(freq/2,freq, sus*10, doneAction:2), mul:amp); // 2
+  tri = LFTri.ar(freq:freq*((detune/100)+1), mul:amp); // 3
+  sig = SinOscFB.ar(freq+tri, feedback:par, mul: amp);
+	sig = sig * env;
+  Out.ar(out, Pan2.ar(LeakDC.ar(sig), pan, amp));
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
+
 SynthDef(\pium, {
   |out=0, amp=0.9, atk=0.01, dec=0.5, sus=1, rel=0.5, accel=0.01, pan=0, freq=80|
   var sig, env, xl;
@@ -264,4 +275,12 @@ SynthDef(\sampler,
     sig = PlayBuf.ar(2, sample, rate:BufRateScale.ir(sample) * rate, trigger:1, startPos:begin, loop:0, doneAction:2);
   OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }, metadata: (credit: "http://github.com/lvm/balc")).add;
+
+SynthDef(\wavet, {
+  |out, amp = 0.9, atk=0.01, rel=1, buf, pan=0, freq=1|
+  var sig, env;
+  env = EnvGen.ar(Env.perc(atk,rel),doneAction:2);
+  sig = PlayBuf.ar(1, buf, BufRateScale.ir(buf) * freq, 1, 0, 1, doneAction:2) * env;
+  Out.ar(out, Pan2.ar(sig, pan, amp));
+}, metadata: (credit: "http://github.com/lvm/balc based on @theseanco Synthdef")).add;
 )

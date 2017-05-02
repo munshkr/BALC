@@ -13,12 +13,9 @@ s.waitForBoot {
   2.wait;
   Pdef.defaultQuant(4);
   ~chan = Array.fill(9, { Bus.audio(s, 2) });
+  s.plotTree;
 	"BALC LOADED".postln;
 };
-)
-
-(
-s.plotTree;
 )
 
 (
