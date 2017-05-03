@@ -5,7 +5,7 @@ SynthDef(\kick, {
   var sig, env, xl;
   amp = amp*0.9;
   xl = XLine.kr(start:freq, end:freq*accel, dur:rel, mul: amp, doneAction:2);
-	env = EnvGen.ar(Env.perc(attackTime: atk, releaseTime: rel, level: amp, curve: -8), timeScale: sus, doneAction: 2);
+	env = EnvGen.ar(Env.perc(attackTime: atk, releaseTime: rel, level: amp, curve: -4), timeScale: sus, doneAction: 2);
   sig = HPF.ar(SinOsc.ar(xl), 60);
   sig = sig * env;
   OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
@@ -180,8 +180,7 @@ SynthDef(\saw, {
   var sig, env;
   amp = amp*0.9;
 	env = EnvGen.ar(Env.perc(atk, rel), timeScale: sus/ 2, doneAction:2);
-	sig = SawDPW.ar([freq, freq+detune] * Line.kr(1,1+accel, sus));
-  sig = sig * env;
+	sig = SawDPW.ar([freq, freq+detune] * Line.kr(1,1+accel, sus)) * env;
   OffsetOut.ar(out, Pan2.ar(sig, pan, amp));
 }, metadata: (credit: "@munshkr")).add;
 

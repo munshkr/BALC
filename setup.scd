@@ -11,7 +11,7 @@ s.waitForBoot {
 	("synths.scd").loadRelative;
   ("fx.scd").loadRelative;
   2.wait;
-  Pdef.defaultQuant(4);
+  //Pdef.defaultQuant(4);
   ~chan = Array.fill(9, { Bus.audio(s, 2) });
   s.plotTree;
 	"BALC LOADED".postln;
