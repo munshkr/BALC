@@ -36,7 +36,7 @@ SynthDef(\clap, {
 
   sig = (sigl + sigs) * env;
   OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan, env));
-}, metadata: (credit: "http://github.com/lvm/balc")).add;
+}, metadata: (credit: "http://github.com/lvm/balc + http://sccode.org/1-523")).add;
 
 SynthDef(\hat, {
   |out=0, attack, sustain, release, rq=0.25, pan=0.5, freq|

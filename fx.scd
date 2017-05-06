@@ -64,13 +64,26 @@ SynthDef(\tremolo, {
   OffsetOut.ar(out, sig);
 }, metadata: (credit: "http://github.com/lvm/balc")).add;
 
-SynthDef(\wah, {
-  |in, out, amp=0.9, low=100, hi=12500, freq=5|
-  var sig, env;
-  sig = In.ar(in, 2) * (amp*0.9);
-  sig = LPF.ar(sig, LinExp.ar(SinOsc.ar(freq), -1, 1, low, hi));
-  OffsetOut.ar(out, sig);
-}, metadata: (credit: "http://github.com/lvm/balc")).add;
+
+~dirt.addModule('wah', {
+  |dirtEvent|
+  dirtEvent.sendSynth('dirt_wah' ++ ~dirt.numChannels,
+    [
+      wah: ~wah,
+      wahf: ~wahf,
+      wahfl: ~wahfl,
+      wahfh: ~wahfh,
+      out: ~out
+    ]
+	)
+}, { ~wah.notNil or: { ~wahf.notNil } });
+SynthDef("dirt_wah" ++ ~dirt.numChannels, {
+  |out, wah, wahf=1, wahfl=100, wahfh=12500|
+	var sig;
+	sig = In.ar(out, ~dirt.numChannels);
+  sig = LPF.ar(sig, LinExp.ar(SinOsc.ar(wahf), -1, 1, wahfl, wahfh), mul: wah);
+	ReplaceOut.ar(out, sig);
+}).add;
 
 SynthDef(\echo, { |out = 0, in = 0, max = 1.0, delay = 0.5, decay = 3, amp = 0.5, bypass = 0|
 	var sig, insig;
