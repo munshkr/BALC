@@ -4,7 +4,7 @@ SynthDef(\kick, {
   |out=0, amp=0.9, atk=0.01, sus=1, rel=0.5, accel=0.01, pan=0, freq=80|
   var sig, env, xl;
   amp = amp*0.9;
-  xl = XLine.kr(start:freq, end:freq*accel, dur:rel, mul: amp, doneAction:2);
+  xl = XLine.kr(start:freq, end:freq*accel, dur:atk+rel+0.1, mul: amp, doneAction:2);
 	env = EnvGen.ar(Env.perc(attackTime: atk, releaseTime: rel, level: amp, curve: -4), timeScale: sus, doneAction: 2);
   sig = HPF.ar(SinOsc.ar(xl), 60);
   sig = sig * env;
