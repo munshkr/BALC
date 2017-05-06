@@ -79,10 +79,10 @@ SynthDef(\tremolo, {
 }, { ~wah.notNil or: { ~wahf.notNil } });
 SynthDef("dirt_wah" ++ ~dirt.numChannels, {
   |out, wah, wahf=1, wahfl=100, wahfh=12500|
-	var sig;
-	sig = In.ar(out, ~dirt.numChannels);
+  var sig;
+  sig = In.ar(out, ~dirt.numChannels);
   sig = LPF.ar(sig, LinExp.ar(SinOsc.ar(wahf), -1, 1, wahfl, wahfh), mul: wah);
-	ReplaceOut.ar(out, sig);
+  ReplaceOut.ar(out, sig);
 }).add;
 
 SynthDef(\echo, { |out = 0, in = 0, max = 1.0, delay = 0.5, decay = 3, amp = 0.5, bypass = 0|
