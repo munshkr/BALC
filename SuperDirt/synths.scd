@@ -56,6 +56,21 @@ SynthDef(\bassy, {
   OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan, env));
 }, metadata: (credit: "http://github.com/lvm/balc")).add;
 
+// uncomplete
+SynthDef(\bacid, {
+  |out=0, gain, pitch=50, rq=0.5, pan=0.5, freq|
+	var env1, env2, sig, env, gate;
+  gate = 1;
+  pitch = Lag.kr(pitch, 0.12 * (1-Trig.kr(gate, 0.001)) * gate);
+  env1 = EnvGen.ar(Env.new([0, 1.0, 0, 0], [0.001, 2.0, 0.04], [0, -4, -4], 2), gate, gain);
+  env2 = EnvGen.ar(Env.adsr(0.001, 0.8, 0, 0.8, 70, -4), gate);
+  sig = LFPulse.ar(pitch.midicps, 0.0, 0.51, 2, -1);
+  sig  = RLPF.ar(sig, (pitch + env2).midicps, 0.3);
+
+  OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan, env1));
+
+}, metadata: (credit: "https://github.com/miguel-negrao/SuperCollider/blob/master/examples/pieces/acid_otophilia.scd")).add;
+
 SynthDef(\piano, {
   |out=0, attack, decay, sustain, release, stretch=0.1, tune=0.5, feed=0.5, pan=0, freq|
   var sig, env;
@@ -162,7 +177,7 @@ SynthDef.new(\varsaw,
   freq = Vibrato.kr(freq, rate: vib);
   osc=VarSaw.ar([freq, (freq * 1.005)], mul: (gain), width: rate);
   env=EnvGen.ar(Env(levels: [gain, gain, gain], curve: \lin, times: sustain*0.5), doneAction: 2);
-  osc = osc * env * EnvGen.ar(Env.perc(attack,sustain), doneAction:2);
+  osc = osc * env;
   OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
 }, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
 

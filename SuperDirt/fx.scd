@@ -1,9 +1,7 @@
 (
-// simple patch cord
-SynthDef.new(\patch,{
-  |in, out, amp=0.9|
-  OffsetOut.ar(out, In.ar(in, 2) * (amp*0.9));
-}, metadata: (credit: "http://github.com/lvm/balc")).add;
+/**
+ * SuperDirt
+ */
 
 
 ~dirt.addModule('distort', {

@@ -16,11 +16,11 @@ s.waitForBoot {
   SuperDirt.default = ~dirt;
   TempoClock.default.tempo = 120/60;
   1.wait;
-  ~dirt.loadSynthDefs("synths.scd");
-  ~dirt.loadSynthDefs("fx.scd");
-  1.wait;
+  //("fx.scd").loadRelative;
+  ("synths.scd").loadRelative;
+  //1.wait;
   "-> SuperDirt Loaded".postln;
-  s.plotTree;
+  //s.plotTree;
 };
 )
 
