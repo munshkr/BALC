@@ -13,43 +13,48 @@ s.waitForBoot {
   s.sync;
   ~dirt.start(57120, [0, 2, 4, 6, 8, 10, 12, 14, 16]);
   3.wait;
+  ~dirt.loadSoundFiles;
+  1.wait;
   SuperDirt.default = ~dirt;
   TempoClock.default.tempo = 120/60;
   1.wait;
-  //("fx.scd").loadRelative;
+  //("fix.scd").loadRelative;
   ("synths.scd").loadRelative;
-  //1.wait;
+  ("fx.scd").loadRelative;
+  ("../braks.scd").loadRelative;
+  ("../theory.scd").loadRelative;
+  0.5.wait;
+  Snippet.enable;
   "-> SuperDirt Loaded".postln;
   //s.plotTree;
 };
 )
 
 (
-p = ProxySpace.push(s);
-p.clock = TempoClock.default;
-p.clock.tempo = 2.0;
-p.fadeTime = 0.05;
-p.quant = 4;
-)
-
-(
-ProxyMixer.new(p);
-)
-
-// algorave mastering
-// https://mccormick.cx/news/entries/heuristic-for-algorave-mastering
-(
+~dirt.orbits.do { |x| x.outBus = 0 };
+~busses.do { |x| x.free };
 ~busses = ~dirt.orbits.collect { |each|
 	var bus = Bus.audio(~dirt.server, ~dirt.numChannels);
 	each.outBus = bus;
 	bus
 }
 );
+// just route all to [0,1]
 (
 Ndef(\mix, {
-	var level = 1;
-	var distortion = 1;
-	var reverbFeedback = 0.1;
+  var gain = 0.25;
+	var all = ~busses.collect { |each| InBus.ar(each, each.numChannels) };
+  Mix.ar(all)*gain;
+}).play;
+);
+
+// algorave mastering
+// https://mccormick.cx/news/entries/heuristic-for-algorave-mastering
+(
+Ndef(\algomix, {
+	var level = 0.9;
+	var distortion = 0.125;
+	var reverbFeedback = 0.125;
 	var all = ~busses.collect { |each| InBus.ar(each, each.numChannels) };
 	var mix = all.sum { |x|
 		var d = { 0.01.rand } ! x.size;
@@ -69,7 +74,8 @@ Ndef(\mix, {
 cleaning up when you're done:
 */
 (
-Ndef(\mix).clear;
-~busses.do { |x| x.free };
 ~dirt.orbits.do { |x| x.outBus = 0 };
+Ndef(\mix).clear;
+Ndef(\algomix).clear;
+~busses.do { |x| x.free };
 );

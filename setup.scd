@@ -10,47 +10,32 @@ s.waitForBoot {
   StageLimiter.activate;
 	("synths.scd").loadRelative;
   ("fx.scd").loadRelative;
+  ("theory.scd").loadRelative;
+  ("braks.scd").loadRelative;
   2.wait;
   //Pdef.defaultQuant(4);
   ~chan = Array.fill(9, { Bus.audio(s, 2) });
-  s.plotTree;
-	"BALC LOADED".postln;
+  //s.plotTree;
+   TempoClock.default.tempo_(120/60);
+  ~clock = ExternalClock(TempoClock.default);
+  ~clock.play;
+	"-> BALC LOADED".postln;
 };
 )
 
-(
-p = ProxySpace.push(s);
-p.clock = TempoClock.default;
-p.clock.tempo = 2.0;
-p.fadeTime = 0.05;
-p.quant = 4;
-)
+// (
+// p = ProxySpace.push(s);
+// p.clock = TempoClock.default;
+// p.clock.tempo = 2.0;
+// p.fadeTime = 0.05;
+// p.quant = 4;
+// )
+//
+// (
+// ProxyMixer.new(p);
+// )
+//
 
-(
-ProxyMixer.new(p);
-)
-
-// amen break
-(
-~buf = Buffer.alloc(s,s.sampleRate,2);
-~samplesDir.clear;
-~samplesDir = thisProcess.nowExecutingPath.dirname ++ "/samples";
-~samples.clear;
-~samples = Array.fill(32, {
-  |i, str|
-  str=(~samplesDir++"/amen/"++(i)++".wav".asString);
-  str;
-});
-~lengths.clear;
-~lengths = Array.fill(~samples.size / 4, {
-  [1,1,Rest(1),1].scramble;
-}).flat;
-~breaks.clear;
-~breaks = Array.fill(~lengths.size, {
-  |i|
-  Buffer.read(s,~samples[i])
-});
-)
 
 // algorave mastering
 // https://mccormick.cx/news/entries/heuristic-for-algorave-mastering

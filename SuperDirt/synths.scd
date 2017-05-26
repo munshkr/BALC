@@ -8,6 +8,13 @@ SynthDef(\kick, {
   OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan, env));
 }, metadata: (credit: "http://github.com/lvm/balc")).add;
 
+SynthDef(\quick, {
+  |out=0, pan=0.5|
+  var sig;
+  sig =Formlet.ar(Impulse.ar(1, 0.5), 80, 0.01, 0.1);
+  OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan));
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
+
 SynthDef(\snare, {
   |out=0, attack, sustain, release, pan=0.5, freq|
   var sig, env;
@@ -81,13 +88,25 @@ SynthDef(\piano, {
 }, metadata: (credit: "http://github.com/lvm/balc")).add;
 
 SynthDef(\23, {
-  |out, gain, attack, sustain, release, fb=0, detune=1.01, pan=0.5, freq|
+  |out, gain, attack, release, fb=0, detune=1.01, pan=0.5, freq|
   var par, tri, sig, env;
-	env = EnvGen.ar(Env.linen(attackTime:attack, sustainTime:sustain, releaseTime:release), timeScale:sustain, doneAction:2);
-  par = LFPar.ar(XLine.kr(freq/2,freq, sustain*10, doneAction:2), mul:gain); // 2
+	env = EnvGen.ar(Env.perc(attackTime:attack, releaseTime:release), doneAction:2);
+  par = LFPar.ar(XLine.kr(freq/2,freq, release*10, doneAction:2), mul:gain); // 2
   tri = LFTri.ar(freq:freq*((detune/100)+1), mul: gain); // 3
   sig = SinOscFB.ar(freq+tri, feedback:par, mul: gain);
 	sig = sig * env;
+  OffsetOut.ar(out, DirtPan.ar(LeakDC.ar(sig), ~dirt.numChannels, pan, env));
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
+
+SynthDef(\c23, {
+  |out, gain, attack, release, fb=0, lctf=400, rq=0.5, detune=1.01, pan=0.5, freq|
+  var par, tri, sig, env;
+	env = EnvGen.ar(Env.perc(attackTime:attack+0.1, releaseTime:release), doneAction:2);
+  par = LFPar.ar(XLine.kr(freq/2,freq, release*10, doneAction:2), mul:gain); // 2
+  tri = LFTri.ar(freq:freq*((detune/100)+1), mul: gain); // 3
+  sig = SinOscFB.ar(freq+tri, feedback:par, mul: gain);
+  sig = FreeVerb.ar(sig, 0.9) * env;
+  sig = RLPF.ar(sig, lctf, rq);
   OffsetOut.ar(out, DirtPan.ar(LeakDC.ar(sig), ~dirt.numChannels, pan, env));
 }, metadata: (credit: "http://github.com/lvm/balc")).add;
 
@@ -96,12 +115,26 @@ SynthDef.new(\kell,{
   var sig, env;
   env = EnvGen.ar(Env.adsr(attack, decay, sustain, release), doneAction: 2);
   sig = Klang.ar(`[
-    freq*[0.5,0.5],
+    freq*[1,0.5],
     0.25!2,
     pi.rand!2], 1, 0)*0.25;
   sig = sig * env;
   OffsetOut.ar(out, DirtPan.ar(LeakDC.ar(sig), ~dirt.numChannels, pan, env));
 }, metadata: (credit: "http://github.com/lvm/balc")).add;
+
+SynthDef(\kfm, {
+  |out, attack, sustain, accel, carPartial=1, modPartial=1, index=3, mul=0.25, detune=0.1, pan=0.5, freq|
+  var env, mod, car, sig;
+  env = EnvGen.ar(Env.perc(attack, 0.999, 1, -3), timeScale: sustain*0.5, doneAction:2);
+  mod = SinOsc.ar(freq * modPartial * Line.kr(1,1+accel, sustain), 0, freq * index * LFNoise1.kr(5.reciprocal).abs);
+  car = SinOsc.ar(([freq, freq+detune] * carPartial) + mod,	0, mul) + Klang.ar(`[
+    ([freq, freq+detune] * carPartial) + mod,
+//    freq*[1,0.5],
+    1!2,
+    pi.rand!2], 1, 0)*0.25;
+  //sig = (car*2) * env;
+  OffsetOut.ar(out, DirtPan.ar(car, ~dirt.numChannels, pan));
+}, metadata: (credit: "based on \fm by @munshkr")).add;
 
 SynthDef(\dust, {
   |out=0, attack, sustain, release, rq=0.25, detune=1, pan=0.5, freq|
@@ -217,4 +250,68 @@ SynthDef.new(\noise,
   osc = osc * env;
   OffsetOut.ar(out, DirtPan.ar(osc, ~dirt.numChannels, pan, env));
 }, metadata: (credit: "https://github.com/Qirky/FoxDot")).add;
+
+SynthDef(\moo, { |out, attack, release, detune=1, sustain = 0.03, pan = 0.5, mode=0,freq|
+  var sig, env;
+  env = EnvGen.ar(Env.perc(attack, release), timeScale: sustain, doneAction:2);
+  sig = BMoog.ar(SinOsc.ar(freq, 0, 0.1), q:0.25, mode:mode, saturation:0.5);
+	OffsetOut.ar(out, DirtPan.ar(sig, ~dirt.numChannels, pan));
+}, metadata: (credit: "http://github.com/lvm/balc")).add;
+
+
+
+// Originally called \ChicagoPad2
+SynthDef(\chicago, { |out, freq, note, note2=48, note3=44, cutfreq=500, velocity = 0.2, gate=1, speed=1, sustain=0.8, decay=0, pan, begin=0, end=1, up = 0 |
+
+    var freq2,freq3,snd, env, envGen, line;
+
+	decay = decay * 0.1;
+	// freq = (note + up).midicps;
+	freq2 = (note2 + up).midicps;
+	freq3 = (note3 + up).midicps;
+
+	//freq = note;
+	//freq2 = note2;
+	//freq3 = note3;
+
+	freq = freq + SinOsc.kr(freq*1/2, 0, freq/2, 0);
+
+    snd = Saw.ar([freq, freq+1, freq-1, freq2, freq3] * [0.99,1])*0.1;
+
+    snd = snd + VarSaw.ar(0.99*[freq, freq+1, freq-1, freq2, freq3, freq2+1, freq3+1],0, LFTri.kr(7.13).range(0.00,0.1))*0.1;
+
+    snd = Mix(snd);
+    snd = FreeVerb.ar(snd, 0.51,10,0.1)*2;
+    snd = snd *8;
+    snd = RLPF.ar(snd, SinOsc.kr([0.1,4.2], 0, [1700,480], [4000,700,5000])/[20.51,20], SinOsc.ar(0.1,1.5*pi)+1.05)/3;
+    snd = Mix(snd);
+
+    snd = MoogFF.ar(snd, SinOsc.kr(0.08, 0.5, cutfreq/10, cutfreq), 3, 0);
+
+	line = Line.ar(begin, end, sustain, doneAction:2);
+	env = Env([0, 1, 0],[1,5], curve:2);
+	envGen = IEnvGen.ar(env, line*env.times.sum*abs(speed));
+
+	//env = EnvGen.ar(Env.adsr(0.4, 0.01,sustain,0.4), gate, doneAction:2);
+
+	//snd = snd * envGen;
+    //snd = snd * EnvGen.ar(Env.adsr(0.4, 0.01,0.8,0.4), gate, doneAction:2);
+
+    snd = [snd , AllpassC.ar(snd, decay, 0.05+SinOsc.ar(0.11).range(0,0.045), 0.3)];
+	//snd = snd.tanh*2;
+
+	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan, envGen));
+
+}, metadata: (credit: "https://github.com/pixelpusher")).add;
+
+SynthDef(\blips2, {
+  |out=0, attack, release, nharm = 10, pan = 0.5, freq|
+	var snd, env;
+	env = Env.perc(attack, release).kr(doneAction: 2);
+  freq = freq * [1, 1.9953843530485];
+	snd = LeakDC.ar(Mix(Blip.ar(freq, nharm, env)));
+	OffsetOut.ar(out, DirtPan.ar(snd, ~dirt.numChannels, pan, env))
+
+}, metadata: (credit: "based on \blips1 by someone [need to find this person]")).add;
+
 )
